@@ -8,7 +8,10 @@ dashboardPage(
   
   dashboardSidebar(
     includeCSS("custom.css"),
-    textInput("userName", "Enter User Name", value="rstudio"),
+inputPanel(
+    textInput("userName", "Enter User Name",value="Rstudio"),
+    actionButton("getRepos","Get Repos")
+),
     uiOutput("a"),
     
     
@@ -33,7 +36,8 @@ dashboardPage(
       
 
             
-tabItem("analysis"
+tabItem("analysis","here",
+        DT::dataTableOutput("rawData")
         
 ), 
             
