@@ -120,16 +120,18 @@ repoData <- eventReactive(input$repo,{
 })
 
 output$rawData <- DT::renderDataTable({
-  # print("enter Raw Data")
-  # print(repoData()$df)
-  # print("that was repoData()$df")
-  # if(is.null(repoData()$df)) return ()
+ 
   req(repoData()$df)
   
   repoData()$df %>% 
-    select(issue,author,date=time,replies,status,id) %>% 
-   DT::datatable(class='compact stripe hover row-border order-column',rownames=TRUE,selection='single',options= list(paging = FALSE, searching = FALSE,info=FALSE))
+    mutate(link=paste0("https://github.com/rstudio/addinexamples/issues/",id)) %>% 
+    mutate(issue=paste0("<a href=\"",link,"\" target=\"_blank\">",issue,"</a>")) %>% 
+    select(issue,author,date=time,replies,status) %>% 
+   DT::datatable(class='compact stripe hover row-border order-column',rownames=TRUE,escape=FALSE,selection='single',options= list(paging = FALSE, searching = FALSE,info=FALSE))
 })
+
+
+
 
 #   source("code/playerSummary.R", local = TRUE)
   
