@@ -36,7 +36,7 @@ inputPanel(
       
 
             
-tabItem("analysis","here",
+tabItem("analysis",
         DT::dataTableOutput("rawData")
         
 ), 
