@@ -37,7 +37,8 @@ inputPanel(
 
             
 tabItem("analysis",
-        DT::dataTableOutput("rawData")
+        DT::dataTableOutput("rawData"),
+        plotlyOutput("rawChart")
         
 ), 
             
