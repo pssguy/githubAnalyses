@@ -7,7 +7,7 @@ shinyServer(function(input, output, session) {
   userData <- eventReactive(input$getRepos,{
     input$getRepos
     #if(is.null(input$userName)) return()
-  #  req(input$userName)
+    req(input$userName)
     
     userName <- input$userName
     
@@ -44,96 +44,97 @@ selectInput("repo","Select repo",userData()$allRepos)
 )
 })
 
-repoData <- eventReactive(input$repo,{
-#  repoData <- reactive({
-  #   print(input$repo)
-  #   print(input$userName)
-  #   if(is.null(input$repo)) return()
-  # print("enter repoData")
- # req(input$repo)
-  
-  #this only shows open
- # v <- paste0("https://github.com/",input$userName,"/",input$repo,"/issues")
-  v <- paste0("https://github.com/",input$userName,"/",input$repo,"/issues?q=is%3Aissue+is%3Aclosed")
-  print(v)
-  theDom <- read_html(v)  #open default
-  
-  issue <- theDom %>%   html_nodes(".issue-title-link") %>% 
-    html_text(trim=TRUE) %>% 
-    as.character()
-  
-  replies <- theDom %>%   html_nodes(".issue-comments") %>% 
-    html_text(trim=TRUE) %>% 
-    as.integer()
-  
-  author <- theDom %>%   html_nodes("#js-repo-pjax-container .tooltipped-s") %>% 
-    html_text(trim=TRUE) %>% 
-    as.character()
-  
-  time <-  theDom %>%   html_nodes("time") %>% 
-    html_text(trim=TRUE) %>% 
-    as.Date("%b %d, %Y")
-  
-  id <- theDom %>% html_nodes(".opened-by") %>% 
-    html_text(trim=TRUE) %>% 
-    str_sub(2,5) %>% 
-    extract_numeric()
- 
-  df_c <- data.frame(issue,replies,author,time,id, stringsAsFactors=FALSE) %>% 
-    mutate(status="Closed")
-  
-  print(glimpse(df_c))
-  
-  u <- paste0("https://github.com/",input$userName,"/",input$repo,"/issues?q=is%3Aissue+is%3Aopen")
-  print(u)
-  theDom <- read_html(u)  #open default
-  
-  issue <- theDom %>%   html_nodes(".issue-title-link") %>% 
-    html_text(trim=TRUE) %>% 
-    as.character()
-  
-  replies <- theDom %>%   html_nodes(".issue-comments") %>% 
-    html_text(trim=TRUE) %>% 
-    as.integer()
-  
-  author <- theDom %>%   html_nodes("#js-repo-pjax-container .tooltipped-s") %>% 
-    html_text(trim=TRUE) %>% 
-    as.character()
-  
-  time <-  theDom %>%   html_nodes("time") %>% 
-    html_text(trim=TRUE) %>% 
-    as.Date("%b %d, %Y")
-  
-  id <- theDom %>% html_nodes(".opened-by") %>% 
-    html_text(trim=TRUE) %>% 
-    str_sub(2,5) %>% 
-    extract_numeric()
-  #status <-"Open"
-  df_o <- data.frame(issue,replies,author,time,id, stringsAsFactors=FALSE) %>% 
-    mutate(status="Open")
-  
-  print(glimpse(df_o))
-  
-  df <- rbind(df_c,df_o)
-  info=list(df=df)
-  return(info)
-})
+# repoData <- eventReactive(input$repo,{
+#   
+# 
+#   v <- paste0("https://github.com/",input$userName,"/",input$repo,"/issues?q=is%3Aissue+is%3Aclosed")
+#   print(v)
+#   theDom <- read_html(v)  #open default
+#   
+#   issue <- theDom %>%   html_nodes(".issue-title-link") %>% 
+#     html_text(trim=TRUE) %>% 
+#     as.character()
+#   
+#   replies <- theDom %>%   html_nodes(".issue-comments") %>% 
+#     html_text(trim=TRUE) %>% 
+#     as.integer()
+#   
+#   author <- theDom %>%   html_nodes("#js-repo-pjax-container .tooltipped-s") %>% 
+#     html_text(trim=TRUE) %>% 
+#     as.character()
+#   
+#   time <-  theDom %>%   html_nodes("time") %>% 
+#     html_text(trim=TRUE) %>% 
+#     as.Date("%b %d, %Y")
+#   
+#   id <- theDom %>% html_nodes(".opened-by") %>% 
+#     html_text(trim=TRUE) %>% 
+#     str_sub(2,5) %>% 
+#     extract_numeric()
+#  
+#   df_c <- data.frame(issue,replies,author,time,id, stringsAsFactors=FALSE) %>% 
+#     mutate(status="Closed")
+#   
+#  
+#   
+#   u <- paste0("https://github.com/",input$userName,"/",input$repo,"/issues?q=is%3Aissue+is%3Aopen")
+#   print(u)
+#   theDom <- read_html(u)  #open default
+#   
+#   issue <- theDom %>%   html_nodes(".issue-title-link") %>% 
+#     html_text(trim=TRUE) %>% 
+#     as.character()
+#   
+#   replies <- theDom %>%   html_nodes(".issue-comments") %>% 
+#     html_text(trim=TRUE) %>% 
+#     as.integer()
+#   
+#   author <- theDom %>%   html_nodes("#js-repo-pjax-container .tooltipped-s") %>% 
+#     html_text(trim=TRUE) %>% 
+#     as.character()
+#   
+#   time <-  theDom %>%   html_nodes("time") %>% 
+#     html_text(trim=TRUE) %>% 
+#     as.Date("%b %d, %Y")
+#   
+#   id <- theDom %>% html_nodes(".opened-by") %>% 
+#     html_text(trim=TRUE) %>% 
+#     str_sub(2,5) %>% 
+#     extract_numeric()
+#   #status <-"Open"
+#   df_o <- data.frame(issue,replies,author,time,id, stringsAsFactors=FALSE) %>% 
+#     mutate(status="Open")
+#   
+#   
+#   
+#   df <- rbind(df_c,df_o)
+#   
+#   ## for use in workingdoc
+#   write.csv(df,"problem.csv") ## inc rownames but not sure that matters as not displaying
+#   
+#   info=list(df=df)
+#   return(info)
+# })
 
-output$rawData <- DT::renderDataTable({
- 
-  req(repoData()$df)
-  
-  repoData()$df %>% 
-    mutate(link=paste0("https://github.com/rstudio/addinexamples/issues/",id)) %>% 
-    mutate(issue=paste0("<a href=\"",link,"\" target=\"_blank\">",issue,"</a>")) %>% 
-    select(issue,author,date=time,replies,status) %>% 
-   DT::datatable(class='compact stripe hover row-border order-column',rownames=TRUE,escape=FALSE,selection='single',options= list(paging = FALSE, searching = FALSE,info=FALSE))
-})
+# output$rawData <- DT::renderDataTable({
+#  
+#   req(repoData()$df)
+#   
+#   repoData()$df %>% 
+#     mutate(link=paste0("https://github.com/rstudio/addinexamples/issues/",id)) %>% 
+#     mutate(issue=paste0("<a href=\"",link,"\" target=\"_blank\">",issue,"</a>")) %>% 
+#     select(issue,author,date=time,replies,status) %>% 
+#    DT::datatable(class='compact stripe hover row-border order-column',
+#                  rownames=FALSE, ## bu
+#                  escape=FALSE,
+#                #  selection='single',
+#                  options= list(paging = FALSE, searching = FALSE,info=FALSE))
+# })
 
 
 
 
-#   source("code/playerSummary.R", local = TRUE)
+   source("code/rawData.R", local = TRUE)
   
   
   

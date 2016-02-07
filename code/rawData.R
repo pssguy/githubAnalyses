@@ -3,7 +3,7 @@
 
 repoData <- eventReactive(input$repo,{
   
-  
+  req(input$repo)
   v <- paste0("https://github.com/",input$userName,"/",input$repo,"/issues?q=is%3Aissue+is%3Aclosed")
   print(v)
   theDom <- read_html(v)  #open default
@@ -123,4 +123,17 @@ output$rawChart <- renderPlotly({
            title=theTitle,
            titlefont=list(size=16)
     )
+})
+
+output$authorSummary <- DT::renderDataTable({
+  
+    repoData()$df %>% 
+    group_by(author,status) %>% 
+    tally() %>% 
+    ungroup() %>% 
+    arrange(desc(n)) %>% 
+    spread(key=status,n,fill=0)%>%
+    mutate(Total=Closed+Open) %>% 
+    arrange(desc(Total)) %>% 
+    DT::datatable(class='compact stripe hover row-border order-column',rownames=FALSE,options= list(paging = TRUE, searching = FALSE,info=FALSE))
 })
