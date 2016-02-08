@@ -1,2 +1,2 @@
 # githubAnalyses
-as the titl puts it
+as the title suggests
