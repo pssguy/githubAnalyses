@@ -5,32 +5,69 @@ shinyServer(function(input, output, session) {
   ## when actio btton pressed
   
   userData <- eventReactive(input$getRepos,{
-    input$getRepos
-    #if(is.null(input$userName)) return()
+    # input$getRepos
+    # #if(is.null(input$userName)) return()
     req(input$userName)
+    # 
+    # userName <- input$userName
     
-    userName <- input$userName
-    
-    for(i in 1:10) {
-      
-      u <- paste0("https://github.com/",userName,"/repositories?page=",i)
-      #  u <- paste0("https://github.com/rstudio?page=",i)
-      print(u)
-      
+    repoLength <- 1
+    i <- 1
+    while (repoLength>0) {
+      print("a")
+      print(repoLength)
+      repoLength <- 0
+      print(i)
+      u <- paste0("https://github.com/",input$userName,"/repositories?page=",i)
       dom <-read_html(u)
       
       repos <- dom %>% 
         html_nodes(".repo-list-name a") %>% 
         html_text(trim=T)
       
+      
       if (i !=1) {
         allRepos <- c(allRepos,repos)
       } else {
         allRepos <- repos
       }
+      
+      
+      repoLength <- length(repos)
+      print("b")
+      i <- i+1
+      print(paste0("rep",repoLength))
+      print(i)
+      print(allRepos)
     }
+    print("exit loop")
+    #allRepos
+    # 
+    # for(i in 1:10) {
+    #   
+    #   u <- paste0("https://github.com/",userName,"/repositories?page=",i)
+    #   #  u <- paste0("https://github.com/rstudio?page=",i)
+    #   print(u)
+    #   
+    #   dom <-read_html(u)
+    #   
+    #   repos <- dom %>% 
+    #     html_nodes(".repo-list-name a") %>% 
+    #     html_text(trim=T)
+    #   
+    #   if (i !=1) {
+    #     allRepos <- c(allRepos,repos)
+    #   } else {
+    #     allRepos <- repos
+    #   }
+    # }
+    print(allRepos)
+    df <- data.frame(repos=allRepos, stringsAsFactors = F)
     
-    info=list(allRepos=allRepos)
+    print(glimpse(df))
+    
+    info=list(df=df)
+    
     return(info)
     
   })
@@ -38,9 +75,14 @@ shinyServer(function(input, output, session) {
 output$a <- renderUI({
   #if(is.null(userData())) return()
   req(userData())
-
+  # print("in select")
+  # print(glimpse(userData()$df))
+  # 
+  repos <- userData()$df$repos
+  #print(repos)
+  
 inputPanel(
-selectInput("repo","Select repo",userData()$allRepos)
+selectInput("repo","Select repo",repos)
 )
 })
 

@@ -9,7 +9,7 @@ dashboardPage(
   dashboardSidebar(
     includeCSS("custom.css"),
 inputPanel(
-    textInput("userName", "Enter User Name",value="Rstudio"),
+    textInput("userName", "Enter Github User Name"),
     actionButton("getRepos","Get Repos")
 ),
     uiOutput("a"),
@@ -20,16 +20,38 @@ inputPanel(
     sidebarMenu(
       id = "sbMenu",
       
-      
-      
-      
-      menuItem(
-        "Analyses", tabName = "analysis",icon = icon("table")
+            menuItem(
+        "Issue Analyses", tabName = "analysis",icon = icon("table")
+        ),
+      menuItem("Info", tabName = "info",icon = icon("table")),
         
+        tags$hr(),
+        menuItem(
+          text = "",href = "https://mytinyshinys.shinyapps.io/dashboard",badgeLabel = "All Dashboards and Trelliscopes (14)"
+        ),
+        tags$hr(),
         
-        
-      ))
+        tags$body(
+          a(
+            class = "addpad",href = "https://twitter.com/pssGuy", target = "_blank",img(src =
+                                                                                          "images/twitterImage25pc.jpg")
+          ),
+          a(
+            class = "addpad2",href = "mailto:agcur@rogers.com", img(src = "images/email25pc.jpg")
+          ),
+          a(
+            class = "addpad2",href = "https://github.com/pssguy",target = "_blank",img(src =
+                                                                                         "images/GitHub-Mark30px.png")
+          ),
+          a(
+            href = "https://rpubs.com/pssguy",target = "_blank",img(src = "images/RPubs25px.png")
+          )
+        )
+      )
     ),
+        
+      
+  
     
     dashboardBody(tabItems(
       
@@ -37,14 +59,29 @@ inputPanel(
 
             
 tabItem("analysis",
-        DT::dataTableOutput("rawData"),
-        plotlyOutput("rawChart"),
-        DT::dataTableOutput("authorSummary")
+        fluidRow(
+          column(
+            width = 6,
+        box(width=12,title="Repo Issues - Click on Issue to access conversation",
+            status = "success",
+        DT::dataTableOutput("rawData"))
+        ),
         
+        column(
+          width = 3,
+          box(width=12,
+        plotlyOutput("rawChart"))),
+        column(
+          width = 3,
+        box(width=12,title="Summary by User",status = "success",
+       DT::dataTableOutput("authorSummary")))
+        
+)
+
 ), 
+tabItem("info",includeMarkdown("about.md"))     
             
-            
-            tabItem("info",includeMarkdown("info.md"))
+           
             
             
             

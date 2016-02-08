@@ -4,6 +4,7 @@
 repoData <- eventReactive(input$repo,{
   
   req(input$repo)
+  req(input$userName)
   v <- paste0("https://github.com/",input$userName,"/",input$repo,"/issues?q=is%3Aissue+is%3Aclosed")
   print(v)
   theDom <- read_html(v)  #open default
@@ -92,31 +93,35 @@ output$rawData <- DT::renderDataTable({
 })
 
 output$rawChart <- renderPlotly({
-  
-  req(repoData()$df)
+  # print("1st enter")
+  # print(repoData()$df)
+  # req(repoData()$df)
+  # print("2nd enter")
+
+  if(nrow(repoData()$df)==0) return()
   
   df <- repoData()$df
-  
-  df <- df %>% 
-   # select(-1) %>% 
-    mutate(reps=ifelse(replies==0,0.1,replies)) %>% 
-    mutate(numStatus=ifelse(status=="Open",1,0.5)) %>% 
+
+  df <- df %>%
+   # select(-1) %>%
+    mutate(reps=ifelse(replies==0,0.1,replies)) %>%
+    mutate(numStatus=ifelse(status=="Open",1,0.5)) %>%
     mutate(colStatus=ifelse(status=="Open","red","green"))
-  
+
   theTitle <- paste0(input$repo," issues - hover for title")
-  
+
   print(theTitle)
-  
+
   plot_ly(df ,
-          x=time, 
+          x=time,
           y=reps,
           type="bar",
           group=replies,
           showlegend = FALSE,
           hoverinfo="text",
           text=paste(time,"<br> ",issue),#"<br>",gameDate, "<br>Game ",gameOrder),
-          marker=list(color=colStatus)) %>% 
-    
+          marker=list(color=colStatus)) %>%
+
     layout(hovermode = "closest", barmode="stack",
            xaxis=list(title=" "),
            yaxis=list(title="Replies"),
@@ -127,13 +132,16 @@ output$rawChart <- renderPlotly({
 
 output$authorSummary <- DT::renderDataTable({
   
-    repoData()$df %>% 
-    group_by(author,status) %>% 
-    tally() %>% 
-    ungroup() %>% 
-    arrange(desc(n)) %>% 
+  if(nrow(repoData()$df)==0) return()
+  
+    repoData()$df %>%
+      
+    group_by(author,status) %>%
+    tally() %>%
+    ungroup() %>%
+    arrange(desc(n)) %>%
     spread(key=status,n,fill=0)%>%
-    mutate(Total=Closed+Open) %>% 
-    arrange(desc(Total)) %>% 
+    mutate(Total=Closed+Open) %>%
+    arrange(desc(Total)) %>%
     DT::datatable(class='compact stripe hover row-border order-column',rownames=FALSE,options= list(paging = TRUE, searching = FALSE,info=FALSE))
 })
