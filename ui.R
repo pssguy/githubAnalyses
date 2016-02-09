@@ -8,10 +8,11 @@ dashboardPage(
   
   dashboardSidebar(
     includeCSS("custom.css"),
-inputPanel(
-    textInput("userName", "Enter Github User Name"),
-    actionButton("getRepos","Get Repos")
-),
+# inputPanel(
+#     textInput("userName", "Enter Github User Name"),
+#     actionButton("getRepos","Get Repos")
+# ),
+    uiOutput("b"),
     uiOutput("a"),
     
     
@@ -21,8 +22,11 @@ inputPanel(
       id = "sbMenu",
       
             menuItem(
-        "Issue Analyses", tabName = "analysis",icon = icon("table")
+        "By Repo", tabName = "repo_analysis",icon = icon("github-alt")
         ),
+      menuItem(
+        "By User", tabName = "user_analysis",icon = icon("male")
+      ),
       menuItem("Info", tabName = "info",icon = icon("table")),
         
         tags$hr(),
@@ -58,25 +62,47 @@ inputPanel(
       
 
             
-tabItem("analysis",
+tabItem("repo_analysis",
         fluidRow(
           column(
             width = 6,
         box(width=12,title="Repo Issues - Click on Issue to access conversation",
             status = "success",
-        DT::dataTableOutput("rawData"))
+        DT::dataTableOutput("repoData"))
         ),
         
         column(
           width = 3,
           box(width=12, footer="Hover for Title, Zoom as required",
-        plotlyOutput("rawChart"))),
+        plotlyOutput("repoChart"))),
         column(
           width = 3,
         box(width=12,title="Summary by User",status = "success",
-       DT::dataTableOutput("authorSummary")))
+       DT::dataTableOutput("repoAuthorSummary")))
         
 )
+),
+
+
+tabItem("user_analysis"
+        # fluidRow(
+        #   column(
+        #     width = 6,
+        #     box(width=12,title="Repo Issues - Click on Issue to access conversation",
+        #         status = "success",
+        #         DT::dataTableOutput("repoData"))
+        #   ),
+        #   
+        #   column(
+        #     width = 3,
+        #     box(width=12, footer="Hover for Title, Zoom as required",
+        #         plotlyOutput("repoChart"))),
+        #   column(
+        #     width = 3,
+        #     box(width=12,title="Summary by User",status = "success",
+        #         DT::dataTableOutput("repoAuthorSummary")))
+        #   
+        # )
 
 ), 
 tabItem("info",includeMarkdown("about.md"))     

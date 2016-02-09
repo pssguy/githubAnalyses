@@ -83,7 +83,7 @@ repoData <- eventReactive(input$repo,{
 })
 
 
-output$rawData <- DT::renderDataTable({
+output$repoData <- DT::renderDataTable({
   
   req(repoData()$df)
   
@@ -98,7 +98,7 @@ output$rawData <- DT::renderDataTable({
                   options= list(paging = TRUE, searching = TRUE,info=TRUE))
 })
 
-output$rawChart <- renderPlotly({
+output$repoChart <- renderPlotly({
   # #print("1st enter")
   # #print(repoData()$df)
   # req(repoData()$df)
@@ -136,7 +136,7 @@ output$rawChart <- renderPlotly({
     )
 })
 
-output$authorSummary <- DT::renderDataTable({
+output$repoAuthorSummary <- DT::renderDataTable({
   
   if(nrow(repoData()$df)==0) return()
   
