@@ -11,6 +11,18 @@ shinyServer(function(input, output, session) {
     # 
     # userName <- input$userName
     
+    # first test if user name exists on github
+    v <- paste0("https://github.com/",input$userName,"/repositories?page=1")
+    
+    
+    
+    if(http_error(v)==TRUE) {
+      allRepos <- character()
+      df <-data.frame(repos=allRepos, stringsAsFactors = F)
+      
+    } else {
+    
+    
     repoLength <- 1
     i <- 1
     while (repoLength>0) {
@@ -19,7 +31,11 @@ shinyServer(function(input, output, session) {
       repoLength <- 0
       print(i)
       u <- paste0("https://github.com/",input$userName,"/repositories?page=",i)
+      
+      
       dom <-read_html(u)
+      
+      
       
       repos <- dom %>% 
         html_nodes(".repo-list-name a") %>% 
@@ -40,32 +56,12 @@ shinyServer(function(input, output, session) {
       print(i)
       print(allRepos)
     }
-    print("exit loop")
-    #allRepos
-    # 
-    # for(i in 1:10) {
-    #   
-    #   u <- paste0("https://github.com/",userName,"/repositories?page=",i)
-    #   #  u <- paste0("https://github.com/rstudio?page=",i)
-    #   print(u)
-    #   
-    #   dom <-read_html(u)
-    #   
-    #   repos <- dom %>% 
-    #     html_nodes(".repo-list-name a") %>% 
-    #     html_text(trim=T)
-    #   
-    #   if (i !=1) {
-    #     allRepos <- c(allRepos,repos)
-    #   } else {
-    #     allRepos <- repos
-    #   }
-    # }
-    print(allRepos)
     df <- data.frame(repos=allRepos, stringsAsFactors = F)
+    }
     
-    print(glimpse(df))
-    
+   
+   
+      
     info=list(df=df)
     
     return(info)

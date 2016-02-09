@@ -140,7 +140,7 @@ output$authorSummary <- DT::renderDataTable({
   
   if(nrow(repoData()$df)==0) return()
   
- write_csv(repoData()$df,"problem.csv")
+ #write_csv(repoData()$df,"problem.csv")
   
   # cater for issue where only closed or open issues
   rightCols <- c("author","Closed","Open")
