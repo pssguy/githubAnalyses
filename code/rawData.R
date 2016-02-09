@@ -114,7 +114,7 @@ output$rawChart <- renderPlotly({
     mutate(numStatus=ifelse(status=="Open",1,0.5)) %>%
     mutate(colStatus=ifelse(status=="Open","red","green"))
 
-  theTitle <- paste0(input$repo," issues - hover for title")
+  theTitle <- paste0(input$repo," Issues ")
 
   #print(theTitle)
 

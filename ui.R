@@ -69,7 +69,7 @@ tabItem("analysis",
         
         column(
           width = 3,
-          box(width=12,
+          box(width=12, footer="Hover for Title, Zoom as required",
         plotlyOutput("rawChart"))),
         column(
           width = 3,

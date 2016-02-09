@@ -19,8 +19,8 @@ shinyServer(function(input, output, session) {
     if(http_error(v)==TRUE) {
       allRepos <- character()
       df <-data.frame(repos=allRepos, stringsAsFactors = F)
-      
-    } else {
+        
+      } else {
     
     
     repoLength <- 1

@@ -16,4 +16,5 @@ library(tidyr)
 library(DT)
 library(readr)
 library(plotly)
+library(httr)
 
