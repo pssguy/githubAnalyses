@@ -6,7 +6,7 @@ repoData <- eventReactive(input$repo,{
   req(input$repo)
   req(input$userName)
   v <- paste0("https://github.com/",input$userName,"/",input$repo,"/issues?q=is%3Aissue+is%3Aclosed")
-  print(v)
+  ##print(v)
   theDom <- read_html(v)  #open default
   
   issue <- theDom %>%   html_nodes(".issue-title-link") %>% 
@@ -17,7 +17,7 @@ repoData <- eventReactive(input$repo,{
     html_text(trim=TRUE) %>% 
     as.integer()
   
-  author <- theDom %>%   html_nodes("#js-repo-pjax-container .tooltipped-s") %>% 
+  author <- theDom %>%   html_nodes(".opened-by .muted-link") %>% 
     html_text(trim=TRUE) %>% 
     as.character()
   
@@ -36,29 +36,35 @@ repoData <- eventReactive(input$repo,{
   
   
   u <- paste0("https://github.com/",input$userName,"/",input$repo,"/issues?q=is%3Aissue+is%3Aopen")
-  print(u)
+  #print(u)
   theDom <- read_html(u)  #open default
   
   issue <- theDom %>%   html_nodes(".issue-title-link") %>% 
     html_text(trim=TRUE) %>% 
     as.character()
+  ##print(issue)
   
   replies <- theDom %>%   html_nodes(".issue-comments") %>% 
     html_text(trim=TRUE) %>% 
     as.integer()
+  ##print(replies)
   
-  author <- theDom %>%   html_nodes("#js-repo-pjax-container .tooltipped-s") %>% 
-    html_text(trim=TRUE) %>% 
+  #author <- theDom %>%   html_nodes("#js-repo-pjax-container .tooltipped-s") %>% .opened-by .muted-link
+  author <- theDom %>%   html_nodes(".opened-by .muted-link") %>% 
+   html_text(trim=TRUE) %>% 
     as.character()
+  ##print(author)
   
   time <-  theDom %>%   html_nodes("time") %>% 
     html_text(trim=TRUE) %>% 
     as.Date("%b %d, %Y")
+  #print(time)
   
   id <- theDom %>% html_nodes(".opened-by") %>% 
     html_text(trim=TRUE) %>% 
     str_sub(2,5) %>% 
     extract_numeric()
+  #print(id)
   #status <-"Open"
   df_o <- data.frame(issue,replies,author,time,id, stringsAsFactors=FALSE) %>% 
     mutate(status="Open")
@@ -67,7 +73,7 @@ repoData <- eventReactive(input$repo,{
   
   df <- rbind(df_c,df_o) %>% 
     arrange(desc(time))
-  print(glimpse(df))
+  #print(glimpse(df))
   
   ## for use in workingdoc
   write.csv(df,"problem.csv") ## inc rownames but not sure that matters as not displaying
@@ -93,10 +99,10 @@ output$rawData <- DT::renderDataTable({
 })
 
 output$rawChart <- renderPlotly({
-  # print("1st enter")
-  # print(repoData()$df)
+  # #print("1st enter")
+  # #print(repoData()$df)
   # req(repoData()$df)
-  # print("2nd enter")
+  # #print("2nd enter")
 
   if(nrow(repoData()$df)==0) return()
   
@@ -110,7 +116,7 @@ output$rawChart <- renderPlotly({
 
   theTitle <- paste0(input$repo," issues - hover for title")
 
-  print(theTitle)
+  #print(theTitle)
 
   plot_ly(df ,
           x=time,
@@ -134,13 +140,31 @@ output$authorSummary <- DT::renderDataTable({
   
   if(nrow(repoData()$df)==0) return()
   
-    repoData()$df %>%
-      
+ write_csv(repoData()$df,"problem.csv")
+  
+  # cater for issue where only closed or open issues
+  rightCols <- c("author","Closed","Open")
+  #print(glimpse(repoData()$df))
+  
+  df <- repoData()$df
+  
+  df <-df %>%
     group_by(author,status) %>%
     tally() %>%
     ungroup() %>%
     arrange(desc(n)) %>%
-    spread(key=status,n,fill=0)%>%
+    spread(key=status,n,fill=0)
+  
+  
+  if(ncol(df)!=3) {
+    if (setdiff(rightCols,colnames(df))=="Open") {
+      df$Open <- 0 
+    }else {
+      df$Closed <- 0
+    }
+  }
+  
+  df %>%
     mutate(Total=Closed+Open) %>%
     arrange(desc(Total)) %>%
     DT::datatable(class='compact stripe hover row-border order-column',rownames=FALSE,options= list(paging = TRUE, searching = FALSE,info=FALSE))
