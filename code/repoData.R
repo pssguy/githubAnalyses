@@ -14,7 +14,7 @@ repoData <- eventReactive(input$repo,{
   df <- issue_list %>%
   {
     data_frame(number = map_int(., "number"),
-               id = map_int(., "id"),
+               id = map_int(., "number"),
                title = map_chr(., "title"),
                state = map_chr(., "state"),
                n_comments = map_int(., "comments"),
