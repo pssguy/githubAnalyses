@@ -18,3 +18,6 @@ library(readr)
 library(plotly)
 library(httr)
 
+library(purrr)
+library(gh)
+

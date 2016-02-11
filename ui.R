@@ -1,7 +1,4 @@
 
-
-
-
 dashboardPage(
   skin = "yellow",
   dashboardHeader(title = "Github Analyses"),

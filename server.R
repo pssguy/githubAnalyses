@@ -21,64 +21,16 @@ shinyServer(function(input, output, session) {
   ## when actio btton pressed
   
   userData <- eventReactive(input$getRepos,{
-    # input$getRepos
-    # #if(is.null(input$userName)) return()
+   
     req(input$userName)
-    # 
-    # userName <- input$userName
     
-    # first test if user name exists on github
-    v <- paste0("https://github.com/",input$userName,"/repositories?page=1")
+    user <- input$userName
+    a <- paste0("/users/",user,"/repos")
     
+    repos <- gh(a, .limit = Inf, state="all",.token="bc1ccbe6243c9b9b86a80963d873f5ac2e515db6") %>%
+      map_chr(., "name") 
     
-    
-    if(http_error(v)==TRUE) {
-      allRepos <- character()
-      df <-data.frame(repos=allRepos, stringsAsFactors = F)
-        
-      } else {
-    
-    
-    repoLength <- 1
-    i <- 1
-    while (repoLength>0) {
-      print("a")
-      print(repoLength)
-      repoLength <- 0
-      print(i)
-      u <- paste0("https://github.com/",input$userName,"/repositories?page=",i)
-      
-      
-      dom <-read_html(u)
-      
-      
-      
-      repos <- dom %>% 
-        html_nodes(".repo-list-name a") %>% 
-        html_text(trim=T)
-      
-      
-      if (i !=1) {
-        allRepos <- c(allRepos,repos)
-      } else {
-        allRepos <- repos
-      }
-      
-      
-      repoLength <- length(repos)
-      print("b")
-      i <- i+1
-      print(paste0("rep",repoLength))
-      print(i)
-      print(allRepos)
-    }
-    df <- data.frame(repos=allRepos, stringsAsFactors = F)
-    }
-    
-   
-   
-      
-    info=list(df=df)
+    info=list(repos=repos)
     
     return(info)
     
@@ -88,7 +40,7 @@ output$a <- renderUI({
  
   req(userData())
   
-  repos <- userData()$df$repos
+  repos <- userData()
   if (input$sbMenu=="repo_analysis"){
 inputPanel(
 selectInput("repo","Select repo",repos)

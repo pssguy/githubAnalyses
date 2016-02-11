@@ -5,79 +5,23 @@ repoData <- eventReactive(input$repo,{
   
   req(input$repo)
   req(input$userName)
-  v <- paste0("https://github.com/",input$userName,"/",input$repo,"/issues?q=is%3Aissue+is%3Aclosed")
-  ##print(v)
-  theDom <- read_html(v)  #open default
   
-  issue <- theDom %>%   html_nodes(".issue-title-link") %>% 
-    html_text(trim=TRUE) %>% 
-    as.character()
+  issue_list <-
+    gh("/repos/:owner/:repo/issues", owner = input$userName, repo = input$repo,
+       state = "all",  .limit = Inf,.token="bc1ccbe6243c9b9b86a80963d873f5ac2e515db6")
+  (n_iss <- length(issue_list)) 
   
-  replies <- theDom %>%   html_nodes(".issue-comments") %>% 
-    html_text(trim=TRUE) %>% 
-    as.integer()
-  
-  author <- theDom %>%   html_nodes(".opened-by .muted-link") %>% 
-    html_text(trim=TRUE) %>% 
-    as.character()
-  
-  time <-  theDom %>%   html_nodes("time") %>% 
-    html_text(trim=TRUE) %>% 
-    as.Date("%b %d, %Y")
-  
-  id <- theDom %>% html_nodes(".opened-by") %>% 
-    html_text(trim=TRUE) %>% 
-    str_sub(2,5) %>% 
-    extract_numeric()
-  
-  df_c <- data.frame(issue,replies,author,time,id, stringsAsFactors=FALSE) %>% 
-    mutate(status="Closed")
-  
-  
-  
-  u <- paste0("https://github.com/",input$userName,"/",input$repo,"/issues?q=is%3Aissue+is%3Aopen")
-  #print(u)
-  theDom <- read_html(u)  #open default
-  
-  issue <- theDom %>%   html_nodes(".issue-title-link") %>% 
-    html_text(trim=TRUE) %>% 
-    as.character()
-  ##print(issue)
-  
-  replies <- theDom %>%   html_nodes(".issue-comments") %>% 
-    html_text(trim=TRUE) %>% 
-    as.integer()
-  ##print(replies)
-  
-  #author <- theDom %>%   html_nodes("#js-repo-pjax-container .tooltipped-s") %>% .opened-by .muted-link
-  author <- theDom %>%   html_nodes(".opened-by .muted-link") %>% 
-   html_text(trim=TRUE) %>% 
-    as.character()
-  ##print(author)
-  
-  time <-  theDom %>%   html_nodes("time") %>% 
-    html_text(trim=TRUE) %>% 
-    as.Date("%b %d, %Y")
-  #print(time)
-  
-  id <- theDom %>% html_nodes(".opened-by") %>% 
-    html_text(trim=TRUE) %>% 
-    str_sub(2,5) %>% 
-    extract_numeric()
-  #print(id)
-  #status <-"Open"
-  df_o <- data.frame(issue,replies,author,time,id, stringsAsFactors=FALSE) %>% 
-    mutate(status="Open")
-  
-  
-  
-  df <- rbind(df_c,df_o) %>% 
-    arrange(desc(time))
-  #print(glimpse(df))
-  
-  ## for use in workingdoc
-  write.csv(df,"problem.csv") ## inc rownames but not sure that matters as not displaying
-  
+  df <- issue_list %>%
+  {
+    data_frame(number = map_int(., "number"),
+               id = map_int(., "id"),
+               title = map_chr(., "title"),
+               state = map_chr(., "state"),
+               n_comments = map_int(., "comments"),
+               opener = map_chr(., c("user", "login")),  ## login is at nested $user$login so helpful
+               created_at = map_chr(., "created_at") %>% as.Date())
+  }
+
   info=list(df=df)
   return(info)
 })
@@ -88,21 +32,18 @@ output$repoData <- DT::renderDataTable({
   req(repoData()$df)
   
   repoData()$df %>% 
-    mutate(link=paste0("https://github.com/",input$userName,"/",input$repo,"/issues/",id)) %>% 
-    mutate(issue=paste0("<a href=\"",link,"\" target=\"_blank\">",issue,"</a>")) %>% 
-    select(issue,author,date=time,replies,status) %>% 
-    DT::datatable(class='compact stripe hover row-border order-column',
+    mutate(link=paste0("https://github.com/",owner,"/",repo,"/issues/",id)) %>% 
+    mutate(issue=paste0("<a href=\"",link,"\" target=\"_blank\">",title,"</a>")) %>% 
+    select(issue,opener,date=created_at,comments=n_comments,state) %>% 
+    DT::datatable(class="compact stripe hover row-border order-column",
                   rownames=FALSE, ## bu
                   escape=FALSE,
-                  #  selection='single',
+                  #  selection="single",
                   options= list(paging = TRUE, searching = TRUE,info=TRUE))
 })
 
 output$repoChart <- renderPlotly({
-  # #print("1st enter")
-  # #print(repoData()$df)
-  # req(repoData()$df)
-  # #print("2nd enter")
+ 
 
   if(nrow(repoData()$df)==0) return()
   
@@ -110,27 +51,29 @@ output$repoChart <- renderPlotly({
 
   df <- df %>%
    # select(-1) %>%
-    mutate(reps=ifelse(replies==0,0.1,replies)) %>%
-    mutate(numStatus=ifelse(status=="Open",1,0.5)) %>%
-    mutate(colStatus=ifelse(status=="Open","red","green"))
+    mutate(reps=ifelse(n_comments==0,0.1,n_comments)) %>%
+    mutate(numStatus=ifelse(state=="open",1,0.5)) %>%
+    mutate(colStatus=ifelse(state=="open","red","green"))
 
   theTitle <- paste0(input$repo," Issues ")
 
-  #print(theTitle)
+  print(names(df))
+  
+  
 
   plot_ly(df ,
-          x=time,
+          x=created_at,
           y=reps,
           type="bar",
-          group=replies,
+          group=n_comments,
           showlegend = FALSE,
           hoverinfo="text",
-          text=paste(time,"<br> ",issue),#"<br>",gameDate, "<br>Game ",gameOrder),
+          text=paste(created_at,"<br> ",title),
           marker=list(color=colStatus)) %>%
 
     layout(hovermode = "closest", barmode="stack",
            xaxis=list(title=" "),
-           yaxis=list(title="Replies"),
+           yaxis=list(title="Comments"),
            title=theTitle,
            titlefont=list(size=16)
     )
@@ -143,29 +86,29 @@ output$repoAuthorSummary <- DT::renderDataTable({
  #write_csv(repoData()$df,"problem.csv")
   
   # cater for issue where only closed or open issues
-  rightCols <- c("author","Closed","Open")
+  rightCols <- c("opener","closed","open")
   #print(glimpse(repoData()$df))
   
   df <- repoData()$df
   
   df <-df %>%
-    group_by(author,status) %>%
+    group_by(opener,state) %>%
     tally() %>%
     ungroup() %>%
     arrange(desc(n)) %>%
-    spread(key=status,n,fill=0)
+    spread(key=state,n,fill=0)
   
   
   if(ncol(df)!=3) {
-    if (setdiff(rightCols,colnames(df))=="Open") {
-      df$Open <- 0 
+    if (setdiff(rightCols,colnames(df))=="open") {
+      df$open <- 0 
     }else {
-      df$Closed <- 0
+      df$closed <- 0
     }
   }
   
   df %>%
-    mutate(Total=Closed+Open) %>%
-    arrange(desc(Total)) %>%
+    mutate(total=closed+open) %>%
+    arrange(desc(total)) %>%
     DT::datatable(class='compact stripe hover row-border order-column',rownames=FALSE,options= list(paging = TRUE, searching = FALSE,info=FALSE))
 })
