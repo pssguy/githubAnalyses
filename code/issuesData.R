@@ -8,10 +8,11 @@ print(input$userNameB)
   
   is <- "issue" # alts? poss pull
   search_q <- list(author = author, is = is)
-  (search_q <- paste(names(search_q), search_q, sep = ":", collapse = " ")) #"author:timelyportfolio is:issue"
+  (search_q <- paste(names(search_q), search_q, sep = ":", collapse = " ")) 
   
-  res <- gh("/search/issues", q = search_q, .limit = Inf,.token="6487f02eacc8ef5c90506c906c80c94d36a82731") #
-  #str(res, max.level = 1)
+  
+  res <- gh("/search/issues", q = search_q, .limit = Inf,.token="mytoken") 
+  
   
 
   good_stuff <- res %>% 
@@ -44,7 +45,7 @@ output$issuesTable <- DT::renderDataTable({
   issuesData()$df %>% 
    # mutate(link=paste0("https://github.com/",opener,"/",input$repo,"/issues/",id)) %>% 
     mutate(issue=paste0("<a href=\"",html_url,"\" target=\"_blank\">",title,"</a>")) %>% 
-    select(repo,issue,date=created_at,comments=comments,state) %>% 
+    select(repo,issue,opened=created_at,comments=comments,state) %>% 
     DT::datatable(class="compact stripe hover row-border order-column",
                   rownames=FALSE, ## bu
                   escape=FALSE,
@@ -65,7 +66,7 @@ output$issuesChart <- renderPlotly({
     mutate(numStatus=ifelse(state=="open",1,0.5)) %>%
     mutate(colStatus=ifelse(state=="open","red","green"))
   
-  theTitle <- paste0(input$userNameB," Issues ")
+#  theTitle <- paste0(input$userNameB," Issues ")
   
   # print(names(df))
   
@@ -84,7 +85,7 @@ output$issuesChart <- renderPlotly({
     layout(hovermode = "closest", barmode="stack",
            xaxis=list(title=" "),
            yaxis=list(title="Comments"),
-           title=theTitle,
+           title="Comments by Issue",
            titlefont=list(size=16)
     ) 
 })
@@ -126,7 +127,7 @@ output$issuesRepoChart <- renderPlotly({
     layout(hovermode = "closest", barmode="stack",
            xaxis=list(title="Contributions"),
            yaxis=list(title=" "),
-           title="Github Issue Contributions", titlefont=list(size=16),
+           title="Issues Opened by Repo", titlefont=list(size=16),
            margin = list(l = 120)
     )
   p

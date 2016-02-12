@@ -5,13 +5,13 @@ shinyServer(function(input, output, session) {
   output$b <- renderUI({ 
   if (input$sbMenu=="repo_analysis") { # has to be at menuSubItem if it exists
     inputPanel(
-      textInput("userName", "Enter Github User Name"),
+      textInput("userName", "Enter exact User Name"),
       actionButton("getRepos","Get Repos")
     )
   } else if (input$sbMenu=="user_analysis") {
     inputPanel(
-    textInput("userNameB", "Enter Github User Name"),
-    actionButton("getIssues","Get Issues")
+    textInput("userNameB", "Enter exact User Name"),
+    actionButton("getIssues","Get Issues Raised")
     )
   }
   })
@@ -27,7 +27,7 @@ shinyServer(function(input, output, session) {
     user <- input$userName
     a <- paste0("/users/",user,"/repos")
     
-    repos <- gh(a, .limit = Inf, state="all",.token="6487f02eacc8ef5c90506c906c80c94d36a82731") %>%
+    repos <- gh(a, .limit = Inf, state="all",.token="mytoken") %>%
       map_chr(., "name") 
     
     info=list(repos=repos)

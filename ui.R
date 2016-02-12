@@ -20,10 +20,10 @@ dashboardPage(
       id = "sbMenu",
       
             menuItem(
-        "By Repo", tabName = "repo_analysis",icon = icon("github-alt")
+        "Issues By Repo", tabName = "repo_analysis",icon = icon("github-alt")
         ),
       menuItem(
-        "By User", tabName = "user_analysis",icon = icon("male"), selected=T
+        "Issues Raised By User", tabName = "user_analysis",icon = icon("male"), selected=T
       ),
       menuItem("Info", tabName = "info",icon = icon("table")),
         
@@ -84,18 +84,35 @@ tabItem("repo_analysis",
 
 tabItem("user_analysis",
         
-        
+        # fluidRow(
+        #   column(width=6,
+        #   column(width=6,
+        # infoBoxOutput("countBox",width=6),
+        # infoBoxOutput("repoBox",width=6)
+        # ),
+        # column(width=6,
+        # infoBoxOutput("closedBox",width=6),
+        # infoBoxOutput("firstBox",width=6)
+        #   )
+        # )
+        # ,
+        # 
+        # column(width=6,   
+        #     box(width=12,title="User Issues - Click on Issue to access conversation",
+        #         status = "success",
+        #         DT::dataTableOutput("issuesTable")
+        #         )
+        # )
+        # ),
+       
         infoBoxOutput("countBox",width=3),
         infoBoxOutput("repoBox",width=3),
         infoBoxOutput("closedBox",width=3),
         infoBoxOutput("firstBox",width=3),
-            
-            box(width=6,title="User Issues - Click on Issue to access conversation",
-                status = "success",
-                DT::dataTableOutput("issuesTable")
-                ),
-       
-
+        box(width=6,title="Issues Opened - Click link to access conversation",
+            #status = "success",
+            DT::dataTableOutput("issuesTable")
+        ),
           
             box(width=6, footer="Hover for Repo and, Zoom as required",
                 plotlyOutput("issuesChart")

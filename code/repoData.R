@@ -6,7 +6,7 @@ repoData <- eventReactive(input$repo,{
   
   issue_list <-
     gh("/repos/:owner/:repo/issues", owner = input$userName, repo = input$repo,
-       state = "all",  .limit = Inf,.token="6487f02eacc8ef5c90506c906c80c94d36a82731")
+       state = "all",  .limit = Inf,.token="mytoken")
   (n_iss <- length(issue_list)) 
   
   df <- issue_list %>%
@@ -34,7 +34,7 @@ output$repoData <- DT::renderDataTable({
   repoData()$df %>% 
     mutate(link=paste0("https://github.com/",opener,"/",input$repo,"/issues/",id)) %>% 
     mutate(issue=paste0("<a href=\"",link,"\" target=\"_blank\">",title,"</a>")) %>% 
-    select(issue,opener,date=created_at,comments=n_comments,state) %>% 
+    select(issue,opener,opened=created_at,comments=n_comments,state) %>% 
     DT::datatable(class="compact stripe hover row-border order-column",
                   rownames=FALSE, ## bu
                   escape=FALSE,
