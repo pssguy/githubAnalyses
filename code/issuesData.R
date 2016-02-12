@@ -137,7 +137,7 @@ output$issuesRepoChart <- renderPlotly({
 output$countBox <- renderInfoBox({
  
   infoBox(
-    "Issues",nrow(issuesData()$df), icon = icon("home"),
+    "Issues Authored",nrow(issuesData()$df), icon = icon("question"),
     color = "light-blue"
   )
 })  
@@ -152,7 +152,7 @@ output$countBox <- renderInfoBox({
       arrange(desc(n))
     
     infoBox(
-      "Repos",nrow(test), icon = icon("home"),
+      "Different Repos",nrow(test), icon = icon("github"),
       color = "light-blue"
     )
 })
@@ -163,9 +163,18 @@ output$countBox <- renderInfoBox({
     closed <-  issuesData()$df %>% 
                filter(state=="closed") %>% 
                nrow()
-    pc <- round(100*closed/total,0)
+    pc <- round(100*closed/tot,0)
     infoBox(
-      "% Closed",pc, icon = icon("home"),
+      "% Issues Closed",pc, icon = icon("percent"),
+      color = "light-blue"
+    )
+  })  
+  
+  output$firstBox <- renderInfoBox({
+    
+   
+    infoBox(
+      "First Issue",min(issuesData()$df$created_at), icon = icon("calendar"),
       color = "light-blue"
     )
   })  

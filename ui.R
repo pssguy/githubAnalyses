@@ -84,6 +84,11 @@ tabItem("repo_analysis",
 
 tabItem("user_analysis",
         
+        
+        infoBoxOutput("countBox",width=3),
+        infoBoxOutput("repoBox",width=3),
+        infoBoxOutput("closedBox",width=3),
+        infoBoxOutput("firstBox",width=3),
             
             box(width=6,title="User Issues - Click on Issue to access conversation",
                 status = "success",
@@ -97,11 +102,9 @@ tabItem("user_analysis",
                 ),
         
       box(width=6, footer="Hover for Repo and, Zoom as required",
-    plotlyOutput("issuesRepoChart")),
+    plotlyOutput("issuesRepoChart"))
     
-    infoBoxOutput("countBox",width=3),
-    infoBoxOutput("repoBox",width=3)
-       
+    
         
 
 ), 
