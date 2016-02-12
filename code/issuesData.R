@@ -11,7 +11,7 @@ print(input$userNameB)
   (search_q <- paste(names(search_q), search_q, sep = ":", collapse = " ")) 
   
   
-  res <- gh("/search/issues", q = search_q, .limit = Inf,.token="mytoken") 
+  res <- gh("/search/issues", q = search_q, .limit = Inf) 
   
   
 

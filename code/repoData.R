@@ -6,7 +6,7 @@ repoData <- eventReactive(input$repo,{
   
   issue_list <-
     gh("/repos/:owner/:repo/issues", owner = input$userName, repo = input$repo,
-       state = "all",  .limit = Inf,.token="mytoken")
+       state = "all",  .limit = Inf)
   (n_iss <- length(issue_list)) 
   
   df <- issue_list %>%
