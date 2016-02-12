@@ -9,16 +9,14 @@ print(input$userNameB)
   is <- "issue" # alts? poss pull
   search_q <- list(author = author, is = is)
   (search_q <- paste(names(search_q), search_q, sep = ":", collapse = " ")) #"author:timelyportfolio is:issue"
-  ## [1] "author:timelyportfolio state:open is:issue"
-  res <- gh("/search/issues", q = search_q, .limit = Inf,.token="6487f02eacc8ef5c90506c906c80c94d36a82731") # 344 looks good
-  ## OK this is not ideal but we can work with it
-  str(res, max.level = 1)
   
-  # Let's dig out what we need. I display the top of a data frame with one row per issue and, for now, issue title and it's browser URL.
+  res <- gh("/search/issues", q = search_q, .limit = Inf,.token="6487f02eacc8ef5c90506c906c80c94d36a82731") #
+  #str(res, max.level = 1)
   
+
   good_stuff <- res %>% 
-    keep(is_list) %>%  # keep and is_list are from purr
-    flatten() # as is flatten - still ends as list
+    keep(is_list) %>%  
+    flatten() 
   
   df <- good_stuff %>%
     map_df(`[`, c("title", "html_url", "repository_url","state","comments","created_at")) 
@@ -26,7 +24,9 @@ print(input$userNameB)
   df$repo <-sub( "^.+/(.+)$", "\\1",  df$repository_url )
  df$created_at <- as.Date(df$created_at)
   
-  print(glimpse(df))
+  # print(glimpse(df))
+  # 
+  # write_csv(df,"df.csv")
   
   info=list(df=df)
   return(info)
@@ -88,3 +88,84 @@ output$issuesChart <- renderPlotly({
            titlefont=list(size=16)
     ) 
 })
+
+output$issuesRepoChart <- renderPlotly({
+  
+  
+  if(nrow(issuesData()$df)==0) return()
+  
+  df <- issuesData()$df
+  
+  test <- df %>% 
+    group_by(repo) %>% 
+    tally() %>% 
+    arrange(desc(n))
+  
+  contributed <- nrow(test)
+  
+  if (contributed>10) {
+  top <- head(test,10)
+  
+  bottom <- tail(test,contributed-10) %>% 
+    tally() %>% 
+    mutate(repo="All Others")
+  
+  all <- rbind(top,bottom) %>% 
+    arrange(n)
+  } else {
+    all <- test %>% 
+      arrange(n)
+  }
+  p <- plot_ly(all,
+               x = n,
+               y = repo,
+               
+               type = "bar",
+               orientation="h"
+  ) %>% 
+    layout(hovermode = "closest", barmode="stack",
+           xaxis=list(title="Contributions"),
+           yaxis=list(title=" "),
+           title="Github Issue Contributions", titlefont=list(size=16),
+           margin = list(l = 120)
+    )
+  p
+})
+
+## InfoBoxes
+
+output$countBox <- renderInfoBox({
+ 
+  infoBox(
+    "Issues",nrow(issuesData()$df), icon = icon("home"),
+    color = "light-blue"
+  )
+})  
+
+  output$repoBox <- renderInfoBox({
+    
+    df <- issuesData()$df
+    
+    test <- df %>% 
+      group_by(repo) %>% 
+      tally() %>% 
+      arrange(desc(n))
+    
+    infoBox(
+      "Repos",nrow(test), icon = icon("home"),
+      color = "light-blue"
+    )
+})
+  
+  output$closedBox <- renderInfoBox({
+    
+    tot <- nrow(issuesData()$df)
+    closed <-  issuesData()$df %>% 
+               filter(state=="closed") %>% 
+               nrow()
+    pc <- round(100*closed/total,0)
+    infoBox(
+      "% Closed",pc, icon = icon("home"),
+      color = "light-blue"
+    )
+  })  

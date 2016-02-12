@@ -83,24 +83,26 @@ tabItem("repo_analysis",
 
 
 tabItem("user_analysis",
-        fluidRow(
-          column(
-            width = 6,
-            box(width=12,title="User Issues - Click on Issue to access conversation",
+        
+            
+            box(width=6,title="User Issues - Click on Issue to access conversation",
                 status = "success",
-                DT::dataTableOutput("issuesTable"))
-          ),
+                DT::dataTableOutput("issuesTable")
+                ),
+       
 
-          column(
-            width = 6,
-            box(width=12, footer="Hover for Repo and Issue, Zoom as required",
-                plotlyOutput("issuesChart")))
-        #   column(
-        #     width = 3,
-        #     box(width=12,title="Summary by User",status = "success",
-        #         DT::dataTableOutput("repoAuthorSummary")))
-        #   
-         )
+          
+            box(width=6, footer="Hover for Repo and, Zoom as required",
+                plotlyOutput("issuesChart")
+                ),
+        
+      box(width=6, footer="Hover for Repo and, Zoom as required",
+    plotlyOutput("issuesRepoChart")),
+    
+    infoBoxOutput("countBox",width=3),
+    infoBoxOutput("repoBox",width=3)
+       
+        
 
 ), 
 tabItem("info",includeMarkdown("about.md"))     

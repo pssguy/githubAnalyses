@@ -27,7 +27,7 @@ shinyServer(function(input, output, session) {
     user <- input$userName
     a <- paste0("/users/",user,"/repos")
     
-    repos <- gh(a, .limit = Inf, state="all",.token="bc1ccbe6243c9b9b86a80963d873f5ac2e515db6") %>%
+    repos <- gh(a, .limit = Inf, state="all",.token="6487f02eacc8ef5c90506c906c80c94d36a82731") %>%
       map_chr(., "name") 
     
     info=list(repos=repos)
