@@ -10,7 +10,7 @@ print(input$userNameB)
   search_q <- list(author = author, is = is)
   (search_q <- paste(names(search_q), search_q, sep = ":", collapse = " ")) #"author:timelyportfolio is:issue"
   ## [1] "author:timelyportfolio state:open is:issue"
-  res <- gh("/search/issues", q = search_q, .limit = Inf,.token="bc1ccbe6243c9b9b86a80963d873f5ac2e515db6") # 344 looks good
+  res <- gh("/search/issues", q = search_q, .limit = Inf,.token="6487f02eacc8ef5c90506c906c80c94d36a82731") # 344 looks good
   ## OK this is not ideal but we can work with it
   str(res, max.level = 1)
   
@@ -33,6 +33,8 @@ print(input$userNameB)
 })
 
 
+
+
 output$issuesTable <- DT::renderDataTable({
   
  # req(issuesData()$df)
@@ -48,4 +50,41 @@ output$issuesTable <- DT::renderDataTable({
                   escape=FALSE,
                   #  selection="single",
                   options= list(paging = TRUE, searching = TRUE,info=TRUE))
+})
+
+output$issuesChart <- renderPlotly({
+  
+  
+  if(nrow(issuesData()$df)==0) return()
+  
+  df <- issuesData()$df
+  
+  df <- df %>%
+    # select(-1) %>%
+    mutate(reps=ifelse(comments==0,0.1,comments)) %>%
+    mutate(numStatus=ifelse(state=="open",1,0.5)) %>%
+    mutate(colStatus=ifelse(state=="open","red","green"))
+  
+  theTitle <- paste0(input$userNameB," Issues ")
+  
+  # print(names(df))
+  
+  
+  
+  plot_ly(df ,
+          x=created_at,
+          y=reps,
+          type="bar",
+          group=comments,
+          showlegend = FALSE,
+          hoverinfo="text",
+          text=paste(repo,"<br>",created_at,"<br> ",title),
+          marker=list(color=colStatus)) %>%
+    
+    layout(hovermode = "closest", barmode="stack",
+           xaxis=list(title=" "),
+           yaxis=list(title="Comments"),
+           title=theTitle,
+           titlefont=list(size=16)
+    ) 
 })

@@ -89,12 +89,12 @@ tabItem("user_analysis",
             box(width=12,title="User Issues - Click on Issue to access conversation",
                 status = "success",
                 DT::dataTableOutput("issuesTable"))
-          )
-        #   
-        #   column(
-        #     width = 3,
-        #     box(width=12, footer="Hover for Title, Zoom as required",
-        #         plotlyOutput("repoChart"))),
+          ),
+
+          column(
+            width = 6,
+            box(width=12, footer="Hover for Repo and Issue, Zoom as required",
+                plotlyOutput("issuesChart")))
         #   column(
         #     width = 3,
         #     box(width=12,title="Summary by User",status = "success",
