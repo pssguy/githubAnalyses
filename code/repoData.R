@@ -1,5 +1,3 @@
-#separating out into sep file caused issue with replacement has 1 row, data has 0
-## even when putting eventReactive in same 
 
 repoData <- eventReactive(input$repo,{
   
@@ -18,7 +16,7 @@ repoData <- eventReactive(input$repo,{
                title = map_chr(., "title"),
                state = map_chr(., "state"),
                n_comments = map_int(., "comments"),
-               opener = map_chr(., c("user", "login")),  ## login is at nested $user$login so helpful
+               opener = map_chr(., c("user", "login")),  
                created_at = map_chr(., "created_at") %>% as.Date())
   }
 
@@ -57,7 +55,7 @@ output$repoChart <- renderPlotly({
 
   theTitle <- paste0(input$repo," Issues ")
 
-  print(names(df))
+ # print(names(df))
   
   
 
@@ -76,18 +74,15 @@ output$repoChart <- renderPlotly({
            yaxis=list(title="Comments"),
            title=theTitle,
            titlefont=list(size=16)
-    )
+    ) 
 })
 
 output$repoAuthorSummary <- DT::renderDataTable({
   
   if(nrow(repoData()$df)==0) return()
-  
- #write_csv(repoData()$df,"problem.csv")
-  
-  # cater for issue where only closed or open issues
+
   rightCols <- c("opener","closed","open")
-  #print(glimpse(repoData()$df))
+
   
   df <- repoData()$df
   

@@ -1,5 +1,6 @@
 
 dashboardPage(
+  title = "Github",
   skin = "yellow",
   dashboardHeader(title = "Github Analyses"),
   
@@ -22,7 +23,7 @@ dashboardPage(
         "By Repo", tabName = "repo_analysis",icon = icon("github-alt")
         ),
       menuItem(
-        "By User", tabName = "user_analysis",icon = icon("male")
+        "By User", tabName = "user_analysis",icon = icon("male"), selected=T
       ),
       menuItem("Info", tabName = "info",icon = icon("table")),
         
@@ -81,14 +82,14 @@ tabItem("repo_analysis",
 ),
 
 
-tabItem("user_analysis"
-        # fluidRow(
-        #   column(
-        #     width = 6,
-        #     box(width=12,title="Repo Issues - Click on Issue to access conversation",
-        #         status = "success",
-        #         DT::dataTableOutput("repoData"))
-        #   ),
+tabItem("user_analysis",
+        fluidRow(
+          column(
+            width = 6,
+            box(width=12,title="User Issues - Click on Issue to access conversation",
+                status = "success",
+                DT::dataTableOutput("issuesTable"))
+          )
         #   
         #   column(
         #     width = 3,
@@ -99,7 +100,7 @@ tabItem("user_analysis"
         #     box(width=12,title="Summary by User",status = "success",
         #         DT::dataTableOutput("repoAuthorSummary")))
         #   
-        # )
+         )
 
 ), 
 tabItem("info",includeMarkdown("about.md"))     

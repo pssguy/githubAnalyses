@@ -10,7 +10,7 @@ shinyServer(function(input, output, session) {
     )
   } else if (input$sbMenu=="user_analysis") {
     inputPanel(
-    textInput("userName2", "Enter Github User Name"),
+    textInput("userNameB", "Enter Github User Name"),
     actionButton("getIssues","Get Issues")
     )
   }
@@ -46,6 +46,9 @@ inputPanel(
 selectInput("repo","Select repo",repos)
 )
   }
+  # } else if (input$sbMenu=="user_analysis"){
+  #   inputPanel(textInput("userNameB", "Enter Github User NameB"))
+  # }
 })
 
 
@@ -54,6 +57,7 @@ selectInput("repo","Select repo",repos)
 
    source("code/repoData.R", local = TRUE)
    source("code/userData.R", local = TRUE)
+    source("code/issuesData.R", local = TRUE)
   
   
 })
