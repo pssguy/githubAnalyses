@@ -11,8 +11,16 @@ shinyServer(function(input, output, session) {
   } else if (input$sbMenu=="user_analysis") {
     inputPanel(
     textInput("userNameB", "Enter exact User Name"),
-    actionButton("getIssues","Get Issues Raised")
+    actionButton("getIssues","Get Issues Raised"),
+    helpText(id="ht","Currently Heaviest Users may cause error or limit to 
+             more recent issues")
     )
+  } else if (input$sbMenu=="faves_analysis") {
+    inputPanel(
+      selectInput("userNameC", "Add or delete Users",choices=defaultAuthors,multiple=TRUE),
+      actionButton("getIssues_faves","Get Issues Raised"),
+      helpText(id="ht","Calling many Users may cause error")
+      )
   }
   })
   
@@ -27,7 +35,7 @@ shinyServer(function(input, output, session) {
     user <- input$userName
     a <- paste0("/users/",user,"/repos")
     
-    repos <- gh(a, .limit = Inf, state="all" %>%
+    repos <- gh(a, .limit = Inf, state="all", .token = "23adfaef2b412cbf7cc09b67223147406eb4a78f") %>%
       map_chr(., "name") 
     
     info=list(repos=repos)
@@ -58,6 +66,7 @@ selectInput("repo","Select repo",repos)
    source("code/repoData.R", local = TRUE)
    source("code/userData.R", local = TRUE)
     source("code/issuesData.R", local = TRUE)
+source("code/favesData.R", local = TRUE)
   
   
 })
