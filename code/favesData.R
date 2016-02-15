@@ -78,7 +78,23 @@ output$issuesChart_faves <- renderPlotly({
          layout(hovermode = "closest", barmode="stack",
            xaxis=list(title=" "),
            yaxis=list(title="Comments"),
-           title="30 most recent Issues raised by User",
+           title="30 most recent Issues raised by each User",
            titlefont=list(size=16)
     ) 
+})
+
+output$repoSummary_faves <- DT::renderDataTable({
+  
+  test <- issuesData_faves()$all %>% 
+    group_by(repo,author) %>% 
+    tally() %>% 
+    arrange(desc(n))  %>%
+    spread(key=author,n,fill=0)
+  
+  tot <- data.frame(tot=rowSums(test[,-1])) #str(tot)
+  
+  test <- cbind(test,tot) %>% 
+    arrange(desc(tot))%>%
+    DT::datatable(class='compact stripe hover row-border order-column',rownames=FALSE,options= list(paging = TRUE, searching = FALSE,info=FALSE))
+  test
 })

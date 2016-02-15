@@ -127,7 +127,7 @@ tabItem("faves_analysis",
         ),
         
         box(width=6, footer="Hover for Repo and, Zoom as required",
-            plotlyOutput("issuesRepoChart_faves"))
+            DT::dataTableOutput("repoSummary_faves"))
         
         
         
