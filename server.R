@@ -17,7 +17,8 @@ shinyServer(function(input, output, session) {
     )
   } else if (input$sbMenu=="faves_analysis") {
     inputPanel(
-      selectInput("userNameC", "Add or delete Users",choices=defaultAuthors,multiple=TRUE),
+     # selectInput("userNameC", "Add or delete Users",choices=defaultAuthors,multiple=TRUE),
+      textInput("userNameC", "Add/Delete Users. Sep with comma",value=defaultAuthors),
       actionButton("getIssues_faves","Get Issues Raised"),
       helpText(id="ht","Calling many Users may cause error")
       )
@@ -35,7 +36,7 @@ shinyServer(function(input, output, session) {
     user <- input$userName
     a <- paste0("/users/",user,"/repos")
     
-    repos <- gh(a, .limit = Inf, state="all", .token = "23adfaef2b412cbf7cc09b67223147406eb4a78f") %>%
+    repos <- gh(a, .limit = Inf, state="all") %>%
       map_chr(., "name") 
     
     info=list(repos=repos)

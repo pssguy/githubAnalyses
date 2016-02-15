@@ -1,8 +1,9 @@
 issuesData_faves <- eventReactive(input$getIssues_faves,{
   
- # authors <- c("jennybc","cpsievert","ironholds","hrbrmstr","hadley")
+
   
-  authors <- input$userNameC
+  authors <- str_split(input$userNameC,",")[[1]]
+
  
   is <- "issue"
   for (i in 1:length(authors)) {
@@ -10,9 +11,7 @@ issuesData_faves <- eventReactive(input$getIssues_faves,{
     (search_q <- paste(names(search_q), search_q, sep = ":", collapse = " ")) 
     
     
-    res <- gh("/search/issues", q = search_q, .limit = 3, .token = "23adfaef2b412cbf7cc09b67223147406eb4a78f") # 100 works 120 works/ 30/30 , # per_page = 30
-    
-    
+    res <- gh("/search/issues", q = search_q, .limit = 3) 
     
     good_stuff <- res %>% 
       keep(is_list) %>%  

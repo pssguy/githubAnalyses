@@ -15,6 +15,7 @@ library(plotly)
 library(purrr)
 library(gh)
 
-# strting point for faves
-defaultAuthors <- c("jennybc","cpsievert","ironholds","hrbrmstr","hadley")
+# starting point for faves
+
+defaultAuthors <- c("jennybc,cpsievert,ironholds,hrbrmstr,hadley")
 
